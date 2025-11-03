@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Generator</title>
+    <style>
+        /* --- Basic Page Setup --- */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Main Container (Box + Buttons) --- */
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: auto;
+            padding-top: 50px;
+        }
+
+        /* --- Styled Fortune Box --- */
+        #fortune-box {
+            width: 400px;
+            min-height: 100px;
+            padding: 20px;
+            border: 3px solid #4CAF50;
+            background-color: #FFFFE0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        #fortune-text {
+            font-size: 1.1rem;
+            color: #333;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+        }
+
+        /* --- Control Buttons (4-button grid) --- */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .control-button {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .control-button:active {
+            transform: scale(0.95);
+        }
+
+        #btn-font-color {
+            background-color: #4CAF50;
+        }
+
+        #btn-bg-color {
+            background-color: #FFEB3B;
+        }
+
+        #btn-border-color {
+            background-color: #2196F3;
+        }
+
+        #btn-font-style {
+            background-color: #FF9800;
+        }
+
+        /* --- Page Footer --- */
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            background-color: #ddd;
+            color: #555;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div id="fortune-box">
+            <p id="fortune-text">Your fortune is loading...</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-button" id="btn-font-color" title="Change Font Color"></button>
+            <button class="control-button" id="btn-bg-color" title="Change Background Color"></button>
+            <button class="control-button" id="btn-border-color" title="Change Border Color"></button>
+            <button class="control-button" id="btn-font-style" title="Change Font Style"></button>
+        </div>
+
+    </div>
+
+    <footer>
+        Sharraf's Webpage.
+    </footer>
+
+    <script>
+        // Wait for the page to load
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Requirement 1: Fortune Messages Array
+            const fortunes = [
+                "True wisdom comes not from knowledge, but from understanding.",
+                "A faithful friend is a strong defense.",
+                "The journey of a thousand miles begins with a single step.",
+                "You will be successful in your work.",
+                "Patience is a virtue; good things come to those who wait.",
+                "An exciting opportunity lies ahead of you.",
+                "Your creativity will blossom.",
+                "Never fear gradients. They're not that hard.",
+                "Generosity will repay itself sooner than you think.",
+                "A smile is your passport into the hearts of others."
+            ];
+
+            // Get references to HTML elements
+            const fortuneBox = document.getElementById('fortune-box');
+            const fortuneText = document.getElementById('fortune-text');
+            const fontColorBtn = document.getElementById('btn-font-color');
+            const bgColorBtn = document.getElementById('btn-bg-color');
+            const borderColorBtn = document.getElementById('btn-border-color');
+            const fontStyleBtn = document.getElementById('btn-font-style');
+
+            // Requirement 2: Random Selection on Load
+            function displayRandomFortune() {
+                const randomIndex = Math.floor(Math.random() * fortunes.length);
+                fortuneText.textContent = fortunes[randomIndex];
+            }
+            displayRandomFortune(); // Show first fortune
+
+            // Requirement 3: Styling & Interactivity (Button Clicks)
+
+            const fontColors = ['#333', '#D32F2F', '#1976D2', '#2E7D32'];
+            let fontColorIndex = 0;
+            fontColorBtn.addEventListener('click', function () {
+                fontColorIndex = (fontColorIndex + 1) % fontColors.length;
+                fortuneText.style.color = fontColors[fontColorIndex];
+            });
+
+            const bgColors = ['#FFFFE0', '#F0F8FF', '#E8F5E9', '#FFF3E0'];
+            let bgColorIndex = 0;
+            bgColorBtn.addEventListener('click', function () {
+                bgColorIndex = (bgColorIndex + 1) % bgColors.length;
+                fortuneBox.style.backgroundColor = bgColors[bgColorIndex];
+            });
+
+            const borderColors = ['#4CAF50', '#2196F3', '#FF9800', '#F44336'];
+            let borderColorIndex = 0;
+            borderColorBtn.addEventListener('click', function () {
+                borderColorIndex = (borderColorIndex + 1) % borderColors.length;
+                fortuneBox.style.borderColor = borderColors[borderColorIndex];
+            });
+
+            let fontStyleToggle = false;
+            fontStyleBtn.addEventListener('click', function () {
+                if (fontStyleToggle) {
+                    fortuneText.style.fontFamily = "'Georgia', serif";
+                    fortuneText.style.fontSize = "1.1rem";
+                    fortuneText.style.fontWeight = "normal";
+                } else {
+                    fortuneText.style.fontFamily = "'Arial', sans-serif";
+                    fortuneText.style.fontSize = "1.2rem";
+                    fortuneText.style.fontWeight = "bold";
+                }
+                fontStyleToggle = !fontStyleToggle;
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>

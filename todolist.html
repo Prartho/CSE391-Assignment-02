@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            width: 500px;
+            max-width: 100%;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        /* Form for adding tasks */
+        #task-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #task-input {
+            flex-grow: 1;
+            /* Input field takes most of the space */
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #task-form button {
+            padding: 10px 15px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* The list of tasks */
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #task-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+
+        #task-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Styles for a completed task */
+        #task-list li.completed span {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        #task-list li input[type="checkbox"] {
+            margin-right: 10px;
+            /* Make checkbox larger and easier to click */
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        #task-list li span {
+            flex-grow: 1;
+            word-break: break-all;
+            /* Prevents long text from overflowing */
+        }
+
+        /* Delete button style */
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>To-Do List</h1>
+
+        <form id="task-form">
+            <input type="text" id="task-input" placeholder="Enter a new task..." autocomplete="off">
+            <button type="submit">Add</button>
+        </form>
+
+        <ul id="task-list">
+        </ul>
+    </div>
+
+    <script>
+        // Get references to the main HTML elements
+        const taskForm = document.getElementById('task-form');
+        const taskInput = document.getElementById('task-input');
+        const taskList = document.getElementById('task-list');
+
+        // This array will be our single source of truth.
+        // It will be loaded from and saved to localStorage.
+        let tasks = [];
+
+        // --- Main Event Listeners ---
+
+        // 1. On page load, get tasks from localStorage
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        // 2. When form is submitted, add a new task
+        taskForm.addEventListener('submit', addTask);
+
+        // 3. Listen for clicks on the task list (for delete and complete)
+        // This is "event delegation"
+        taskList.addEventListener('click', handleTaskClick);
+
+
+        // --- Functions ---
+
+        function loadTasks() {
+            // Requirement 4: Get tasks from localStorage
+            const storedTasks = localStorage.getItem('tasks');
+
+            // If tasks exist, parse the JSON string, otherwise use an empty array
+            tasks = storedTasks ? JSON.parse(storedTasks) : [];
+
+            renderAllTasks();
+        }
+
+        function renderAllTasks() {
+            // Clear the list first to avoid duplicates
+            taskList.innerHTML = '';
+
+            // Create and append an <li> for each task object
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+
+                // Add a 'data-index' to link the <li> to the array index
+                li.dataset.index = index;
+
+                // Add 'completed' class for styling if task is done
+                if (task.completed) {
+                    li.classList.add('completed');
+                }
+
+                // Requirement 3: Checkbox and Delete Button
+                li.innerHTML = `
+                    <input type="checkbox" ${task.completed ? 'checked' : ''}>
+                    <span>${task.text}</span>
+                    <button class="delete-btn">Delete</button>
+                `;
+
+                taskList.appendChild(li);
+            });
+        }
+
+        function addTask(event) {
+            // Prevent the form from reloading the page
+            event.preventDefault();
+
+            const taskText = taskInput.value.trim();
+
+            if (taskText !== '') {
+                // Create a new task object
+                const newTask = {
+                    text: taskText,
+                    completed: false
+                };
+
+                // Add the new task to our main array
+                tasks.push(newTask);
+
+                saveTasks();
+                renderAllTasks();
+
+                taskInput.value = ''; // Clear the input field
+                taskInput.focus();
+            }
+        }
+
+        function handleTaskClick(event) {
+            // Find the <li> element that was clicked inside
+            const clickedLi = event.target.closest('li');
+            if (!clickedLi) return; // Exit if the click wasn't on a list item
+
+            // Get the index of the task from the 'data-index' attribute
+            const index = parseInt(clickedLi.dataset.index);
+
+            // Case 1: Clicked the delete button
+            if (event.target.classList.contains('delete-btn')) {
+                // Remove the task from the array
+                tasks.splice(index, 1);
+            }
+
+            // Case 2: Clicked the checkbox
+            if (event.target.type === 'checkbox') {
+                // Toggle the 'completed' status in the array
+                tasks[index].completed = event.target.checked;
+            }
+
+            // Save the updated array and re-draw the list
+            saveTasks();
+            renderAllTasks();
+        }
+
+        function saveTasks() {
+            // Requirement 4: Save the current 'tasks' array to localStorage
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+    </script>
+</body>
+
+</html>

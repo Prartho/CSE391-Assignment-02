@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .stopwatch-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #time-display {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        #start-btn {
+            background-color: #28a745;
+        }
+
+        #stop-btn {
+            background-color: #dc3545;
+        }
+
+        #reset-btn {
+            background-color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="stopwatch-container">
+        <div id="time-display">0</div>
+
+        <div class="controls">
+            <button id="start-btn" class="btn">Start</button>
+            <button id="stop-btn" class="btn">Stop</button>
+            <button id="reset-btn" class="btn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        // Get references to HTML elements
+        const timeDisplay = document.getElementById('time-display');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        let currentTime = 0;      // Stores the current time in seconds
+        let timerInterval = null; // Stores the interval ID to stop it
+
+        // This function runs every 3 seconds
+        function runTimer() {
+            // Requirement: Increment by 3 seconds
+            currentTime += 3;
+
+            timeDisplay.textContent = currentTime;
+
+            // Requirement: Automatically stops at 30 seconds
+            if (currentTime >= 30) {
+                stopTimer();
+            }
+        }
+
+        function startTimer() {
+            // Only start if timer is stopped (null) and under 30
+            if (timerInterval === null && currentTime < 30) {
+                // Call runTimer every 3000 milliseconds (3 seconds)
+                timerInterval = setInterval(runTimer, 3000);
+            }
+        }
+
+        function stopTimer() {
+            // Stops the interval from running
+            clearInterval(timerInterval);
+            timerInterval = null; // Mark timer as stopped
+        }
+
+        function resetTimer() {
+            stopTimer();
+            currentTime = 0;
+            timeDisplay.textContent = currentTime; // Update display to 0
+        }
+
+        // --- Attach Event Listeners to Buttons ---
+        startBtn.addEventListener('click', startTimer);
+        stopBtn.addEventListener('click', stopTimer);
+        resetBtn.addEventListener('click', resetTimer);
+
+    </script>
+
+</body>
+
+</html>
